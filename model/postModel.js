@@ -5,6 +5,11 @@ const PostSchema = new mongoose.Schema({
         required: true,
         unique:true
     },
+    author:{
+        type: mongoose.SchemaTypes.ObjectId,
+        ref:"User",
+        require:true
+    },
     likes:[{
         type: mongoose.SchemaTypes.ObjectId,
         ref:"User"

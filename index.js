@@ -27,7 +27,6 @@ mongoose.connect(process.env.MONGODB_URL, {
 let UserRouter = require("./router/user")
 app.use(UserRouter)
 
-
 app.listen(PORT, () => {
     console.log("Server is listening to PORT:" + PORT);
 });

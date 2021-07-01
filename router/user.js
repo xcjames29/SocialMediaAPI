@@ -2,7 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const UserController = require("../controller/userController");
-
+const PostController = require("../controller/postController")
 
 
 router.route("/signup")
@@ -146,5 +146,29 @@ router.get("/unfollow/:username", async(req,res)=>{
         }
     }
 })
+
+router.route("/post/:id")
+.get(async(req,res)=>{
+
+
+})
+.post(async(req,res)=>{
+
+})
+.delete(async(req,res)=>{
+    let {id} = req.params;
+    try{
+        let deleteID = await PostController.removePost(id)
+        console.log(deleteID);
+        res.status(200).send("Successfully Deleted")
+    }
+    catch(e){
+        console.log(e.message);
+        res.status(400).send(e.message);
+    }
+})
+
+
+
 
 module.exports = router;
