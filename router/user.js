@@ -77,4 +77,74 @@ router.post("/logout",async(req,res)=>{
     }
 })
 
+
+router.get("/follow/:username", async(req,res)=>{
+    let header = req.headers["authorization"];
+    if(!header){
+        res.status(403).send("Token not provided!");
+        return;
+    }
+    else{
+        try{
+            let {username} = req.params;
+            let token = header.split(" ")[1];
+            let verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            console.log(verifyToken);
+            let {email} = verifyToken;
+            let userId = await UserController.getUserIDwithEmail(email);
+            console.log("nakuha?", userId.result)
+            if(userId.status){
+                let data = await UserController.addFollowing(username,userId.result._id);
+                console.log("anoka?????:",data);
+                if(data.status) {
+                    let addFollower = await UserController.addFollower(userId.result._id,data.id);
+                    if(addFollower.status) res.status(200).send("Follow Success!");
+                    else res.status(400).send(addFollower.result);
+                }
+                else res.status(400).send(data.result);
+            }
+            else res.status(400).send("Invalid Email from token");
+        }
+        catch(e){
+            console.log("Follow",e.message);
+            res.status(403).send("Token is expired")
+        }
+    }
+})
+
+
+router.get("/unfollow/:username", async(req,res)=>{
+    let header = req.headers["authorization"];
+    if(!header){
+        res.status(403).send("Token not provided!");
+        return;
+    }
+    else{
+        try{
+            let {username} = req.params;
+            let token = header.split(" ")[1];
+            let verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            console.log(verifyToken);
+            let {email} = verifyToken;
+            let userId = await UserController.getUserIDwithEmail(email);
+            console.log("nakuha?", userId.result)
+            if(userId.status){
+                let data = await UserController.unfollowUser(username,userId.result._id);
+                console.log("anoka?????:",data);
+                if(data.status){
+                    let removeFollowing = await UserController.removeFollowing(userId.result._id,data.id)
+                    if(removeFollowing.status) res.status(200).send(removeFollowing.result);
+                    else res.status(400).send(removeFollowing.result);
+                }
+                else res.status(400).send(data.result);
+            }
+            else res.status(400).send("Invalid Email from token");
+        }
+        catch(e){
+            console.log("Follow",e.message);
+            res.status(403).send("Token is expired")
+        }
+    }
+})
+
 module.exports = router;
